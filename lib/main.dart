@@ -11,6 +11,7 @@ import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'layout/change_pass.dart';
 import 'layout/copon.dart';
 import 'layout/course.dart';
 import 'layout/dashboard.dart';
@@ -238,9 +239,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         page_con.jumpToPage(index);
                       },
                       icon: const Icon(Icons.settings),
-                    ),
-                  SideMenuItem(
+                    ), SideMenuItem(
                     priority: 12,
+                    title: 'تغيير كلمة السر',
+                    onTap: (index,con) {
+                      page.changePage(12);
+                      page_con.jumpToPage(index);
+                    },
+                    icon: const Icon(Icons.password),
+                  ),
+
+                  SideMenuItem(
+                    priority: 13,
                     title: 'تسجيل الخروج',
                     icon: Icon(Icons.exit_to_app),
                     onTap: (index,con) async {
@@ -268,7 +278,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     NotificationPage(),
                     Copon(),
                     CalendarSubject(),
-                    Settings()
+                    Settings(),
+                    ChangePass(),
                   ],
                 ),
               ),

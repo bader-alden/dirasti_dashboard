@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 String? col;
-String base_url = "https://ubiquitous-sepia-rainforest.glitch.me/";
+String base_url = "https://workable-forest-quotation.glitch.me/";
  Tost_widget (msg,String color){
   if(color == "green") col = "#02e637";
   if(color == "red") col = "#fc031c";

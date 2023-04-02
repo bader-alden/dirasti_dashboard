@@ -19,7 +19,7 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     // hive.hive_get("id").then((value) => print(value));
     if(hive.hive_get("id")!=null){
-      dio.post_data(url: "/dash/signid",quary: {"id":  hive.hive_get("id")}).then((value) {
+      dio.post_data(url: "/dash/signid",quary: {"id":  hive.hive_get("id") , "password":hive.hive_get("password")}).then((value) {
         if(value?.data.length > 0) {
           print(value?.data);
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>MyHomePage()), (route) => false);
