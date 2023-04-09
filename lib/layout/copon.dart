@@ -156,6 +156,7 @@ class _CoponState extends State<Copon> {
                     showDialog(context: context, builder: (context)=>StatefulBuilder(
                         builder: (context,setst) {
                           return AlertDialog(
+                            scrollable: true,
                             content: Column(
                               children: [
                                 Text("إنشاء"),
@@ -284,22 +285,42 @@ class _CoponState extends State<Copon> {
                             actions: [
                               ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                               ElevatedButton(onPressed: (){
-                                var l = "$type|$grade|$subject|$tracher|${type==0?file:course}";
-                                dio.post_data(url: "/dash/insert",quary: {"table":" copon " , "sql_key":"  list_cours ,  is_open  , name_copon ,  uid_copon , price , grade " , "sql_value":"  '$l' , '1' , '${name_con.text}' , '${uid_con.text}' , '${price_con.text}', '$grade' " }).then((value) {
-                                  print(value?.data);
-                                  dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " copon "}).then((value) {
-                                    copon_list.clear();
-                                    value?.data.forEach((element) {
-                                      print(element);
-                                      copon_list.add(copon_module.fromjson(element));
-                                      if (copon_list.length == value.data.length) {
-                                        setState(() {});
-                                      }
-                                    });
-                                  });
-                                  Navigator.pop(context);
-                                });
-                              },child: Text("موافق")),
+                                if(type==null || grade == null || tracher == null || file == null&&course==null){
+                                  Tost_widget("يرجى ملئ المعلومات", "red");
+                                }else {
+                                          var l =
+                                              "$type|$grade|$subject|$tracher|${type == 0 ? file : course}";
+                                          dio.post_data(
+                                              url: "/dash/insert",
+                                              quary: {
+                                                "table": " copon ",
+                                                "sql_key":
+                                                    "  list_cours ,  is_open  , name_copon ,  uid_copon , price , grade ",
+                                                "sql_value":
+                                                    "  '$l' , '1' , '${name_con.text}' , '${uid_con.text}' , '${price_con.text}', '$grade' "
+                                              }).then((value) {
+                                            print(value?.data);
+                                            dio.post_data(
+                                                url: "/dash/select",
+                                                quary: {
+                                                  "sql": " * ",
+                                                  "table": " copon "
+                                                }).then((value) {
+                                              copon_list.clear();
+                                              value?.data.forEach((element) {
+                                                print(element);
+                                                copon_list.add(copon_module
+                                                    .fromjson(element));
+                                                if (copon_list.length ==
+                                                    value.data.length) {
+                                                  setState(() {});
+                                                }
+                                              });
+                                            });
+                                            Navigator.pop(context);
+                                          });
+                                        }
+                                      },child: Text("موافق")),
                             ],
                           );
                         }
@@ -574,9 +595,9 @@ Widget copon_list_element(BuildContext context, copon_module model, setstate) {
                   SizedBox(
                     width: 30,
                   ),
-                  if(model.add_by!=null)
+                  if(!model.is_open!)
                   Center(child: Text("تم التفعيل من قبل:" + model.add_by!)),
-                  if(model.add_by!=null)
+                  if(!model.is_open!)
                   SizedBox(
                     width: 10,
                   ),
@@ -657,6 +678,7 @@ Widget copon_list_element(BuildContext context, copon_module model, setstate) {
                           showDialog(context: context, builder: (context)=>StatefulBuilder(
                               builder: (context,setst) {
                                 return AlertDialog(
+                                  scrollable: true,
                                   content: Column(
                                     children: [
                                       Text("تعديل"),

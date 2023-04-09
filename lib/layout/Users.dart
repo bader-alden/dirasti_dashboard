@@ -1,5 +1,9 @@
-import 'dart:html';
+import 'dart:html' as html;
 
+import 'package:dirasti_dashboard/module/course_module.dart';
+import 'package:dirasti_dashboard/module/file_module.dart';
+import 'package:dirasti_dashboard/module/grade_module.dart';
+import 'package:dirasti_dashboard/module/subject_module.dart';
 import 'package:dirasti_dashboard/utils/const.dart';
 import 'package:dirasti_dashboard/utils/dio.dart';
 import 'package:dirasti_dashboard/module/user_module.dart';
@@ -8,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../module/user_module.dart';
 
 List<user_module> user_list = [];
+List<grade_module> grade_list = [];
 ScrollController user_list_con = ScrollController();
 ScrollController user_elment_con = ScrollController();
 int user_type_page = 0;
@@ -33,7 +38,12 @@ class _UsersState extends State<Users> {
         }
       });
     });
-
+    dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " grade "}).then((value) {
+      value?.data.forEach((element) {
+        print(element);
+        grade_list.add(grade_module.fromjson(element));
+      });
+    });
 
   }
 
@@ -387,7 +397,8 @@ Widget user_detail_widget(BuildContext context, user_module? model, setstate) {
               padding: const EdgeInsets.all(4.0),
               child: Center(
                   child: Text(
-                    "الصف ${model.grade}",
+                    " الصف  " +(grade_list.where((e) => e.id==model.grade).first.name??""),
+                    //"الصف ${model.grade}",
                     style: TextStyle(fontSize: 24),
                   )),
             ),
@@ -453,7 +464,19 @@ Widget user_detail_widget(BuildContext context, user_module? model, setstate) {
                   Text(model!.course_file!.split(",")[index]),
                   SizedBox(width: 20,),
                   ElevatedButton(onPressed: () {
-                //    Navigator.push(context, MaterialPageRoute(builder: (context)=>auction_details_screen(is_redy: false,type: model!.fav![index].split("|")[1],id:model!.fav![index].split("|")[0] ,)));
+                    var f= model!.course_file!.split(",")[index].toString().split("|");
+                    dio.post_data(url: "/dash/select_where",quary:  {"sql":" * ","table":"course","where":" teacher_name ='${f[3]}' AND subject ='${f[2]}' AND grade ='${f[1]}' "}).then((value) {
+                      var fil = course_module.fromjson(value?.data[0]);
+                      showDialog(context: context, builder: (context)=>AlertDialog(
+                        title: Column(
+                          children: [
+                            Image.network(fil.banner!),
+                            Text(fil.name??""),
+                            Text(fil.des??""),
+                          ],
+                        ),
+                      ));
+                    });
                   }, child: Text("عرض")),
                 ],
               );
@@ -485,7 +508,24 @@ Widget user_detail_widget(BuildContext context, user_module? model, setstate) {
                   Text(model!.course_file!.split(",")[index]),
                   SizedBox(width: 20,),
                   ElevatedButton(onPressed: () {
-                    //    Navigator.push(context, MaterialPageRoute(builder: (context)=>auction_details_screen(is_redy: false,type: model!.fav![index].split("|")[1],id:model!.fav![index].split("|")[0] ,)));
+                    var f= model!.course_file!.split(",")[index].toString().split("|");
+                    dio.post_data(url: "/dash/select_where",quary:  {"sql":" * ","table":"file","where":" teacher_name ='${f[3]}' AND subject ='${f[2]}' AND grade ='${f[1]}' "}).then((value) {
+                      var fil = file_module.fromjson(value?.data[0]);
+                      showDialog(context: context, builder: (context)=>AlertDialog(
+                        title: Column(
+                          children: [
+                            Text(fil.name??""),
+                            Text(fil.des??""),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(onPressed: (){
+                                html.window.open(fil.link!,"_blank");
+                              }, child: Text("عرض الملف")),
+                            ),
+                          ],
+                        ),
+                      ));
+                    });
                   }, child: Text("عرض")),
                 ],
               );
