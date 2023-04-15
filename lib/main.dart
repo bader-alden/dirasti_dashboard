@@ -29,6 +29,8 @@ String getOSInsideWeb() {
   return "Web";
 }
 main() async {
+  await WidgetsFlutterBinding.ensureInitialized();
+
   String platform = "";
   if (kIsWeb) {
     platform = getOSInsideWeb();
@@ -38,7 +40,7 @@ main() async {
   }else{
     is_open = true;
   }
-  WidgetsFlutterBinding.ensureInitialized();
+
   dio.init();
   await hive.init();
   runApp( MyApp());

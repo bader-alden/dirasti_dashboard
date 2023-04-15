@@ -21,6 +21,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../module/grade_module.dart';
 import '../module/user_module.dart';
+import '../utils/QR.dart';
 
 List<copon_module> copon_list = [];
 List<copon_module> sec_copon_list = [];
@@ -629,32 +630,47 @@ Widget copon_list_element(BuildContext context, copon_module model, setstate) {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(onPressed: () async {
+
                       Future<ui.Image> _loadOverlayImage() async {
                         final completer = Completer<ui.Image>();
                         final byteData = await rootBundle.load('assets/logo.png');
                         ui.decodeImageFromList(byteData.buffer.asUint8List(), completer.complete);
                         return completer.future;
                       }
-                       await _loadOverlayImage().then((value) async {
-                         final image = await QrPainter(
-                             data:model.uid_copon!,
-                             version: QrVersions.auto,
-                             errorCorrectionLevel: QrErrorCorrectLevel.Q,
-                          //      embeddedImage: value,
-                            gapless: true,
-                             color: Colors.black,
-                             emptyColor: Colors.white,
-                         ).toImageData(400);
+                      //  await _loadOverlayImage().then((value) async {
+                      //    final image = await QrPainter(
+                      //
+                      //        data:model.uid_copon!,
+                      //        version: QrVersions.auto,
+                      //        errorCorrectionLevel: QrErrorCorrectLevel.Q,
+                      //     //      embeddedImage: value,
+                      //       gapless: true,
+                      //        color: Colors.black,
+                      //        emptyColor: Colors.white,
+                      //    ).toImageData(400);
+                      //
+                      //    var pngBytes = base64Encode(image!.buffer.asUint8List());
 
-                         var pngBytes = base64Encode(image!.buffer.asUint8List());
 
-                         var download = document.createElement('a') as AnchorElement;
+                      ui.Image image = await QrPainter(
+                        data: model.uid_copon??"",
+                        gapless: true,
+                        version: QrVersions.auto,
+                        color: Color.fromRGBO(0, 0, 0, 1),
+                        emptyColor: Colors.white,
+                    //    embeddedImage: AssetImage('assets/images/logo.png'),
+                      ).toImage(150);
+                      ByteData? data = await CodePainter(qrImage: image)
+                          .toImageData(300);
+                      //showDialog(context: context, builder: (context)=>Container(child: Image.memory(data!.buffer.asUint8List()),));
+                        var pngBytes = base64Encode(data!.buffer.asUint8List());
+                        var download = document.createElement('a') as AnchorElement;
+                        download.href = 'data:image/png;base64,'+pngBytes;
+                        download.download = model.uid_copon!+'.png';
+                        download.click();
+                        download.remove();
 
-                         download.href = 'data:image/png;base64,'+pngBytes;
-                         download.download = model.uid_copon!+'.png';
-                         download.click();
-                         download.remove();
-                       });
+
 
 
 
