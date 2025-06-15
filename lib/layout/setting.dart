@@ -94,7 +94,9 @@ class _SettingsState extends State<Settings> {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        dio.post_data(url: "/dash/update_id", quary: {"table": "privacy_policy", "sql_key": "text = '" + con.text + "'", "id": "1"}).then(
+                        dio.post_data(url: "/dash/update_id", data: {
+                          "sql_key": "text = '" + con.text + "'",
+                        },quary: {"table": "privacy_policy",  "id": "1"}).then(
                                 (value) {
                               dio.post_data(url: "/dash/select", quary: {"table": "privacy_policy", "sql": " * "}).then((value) => setState(() {
                                 terms = value?.data[0]['text'].toString();
@@ -354,9 +356,13 @@ class _SettingsState extends State<Settings> {
                                           TextButton(
                                             child: Text('موافق'),
                                             onPressed: () {
-                                              dio.post_data(url: "/dash/update_id", quary: {
+                                              dio.post_data(url: "/dash/update_id",
+                                                  data: {
+                                                    "sql_key": " name = '${name_con.text}' , address = '${addres_con.text}' ,  lat = '${lat_con.text}' , lang = '${long_con.text}' ",
+
+                                                  },
+                                                  quary: {
                                                 "table": "Coupon_points_of_sale",
-                                                "sql_key": " name = '${name_con.text}' , address = '${addres_con.text}' ,  lat = '${lat_con.text}' , lang = '${long_con.text}' ",
                                                 "id": point_list[index]['id']
                                               }).then((value) {
                                                 print(value?.data);
@@ -601,7 +607,7 @@ class _SettingsState extends State<Settings> {
                                               ),
                                               Text("الرابط:", textDirection: TextDirection.rtl),
                                               TextFormField(
-                                                controller: name_con,
+                                                controller: link_con,
                                                 textDirection: TextDirection.rtl,
                                               ),
                                               SizedBox(
@@ -652,9 +658,12 @@ class _SettingsState extends State<Settings> {
                                           TextButton(
                                             child: Text('موافق'),
                                             onPressed: () {
-                                              dio.post_data(url: "/dash/update_id", quary: {
+                                              dio.post_data(url: "/dash/update_id",
+                                                  data: {
+                                                    "sql_key": " name = '${name_con.text}' , link = '${link_con.text}' , photo = '${s}'",
+
+                                                  }, quary: {
                                                 "table": "Social_Media",
-                                                "sql_key": " name = '${name_con.text}' , link = '${link_con.text}' , photo = '${s}'",
                                                 "id": link_list[index]['id']
                                               }).then((value) {
                                                 print(value?.data);
@@ -813,7 +822,14 @@ class _SettingsState extends State<Settings> {
                               print(value?.data);
                               Tost_widget("تم رفع الصورة", "green");
                               var s = value?.data;
-                              dio.post_data(url: "/dash/update_id", quary: {"table": "privacy_policy", "sql_key": "banner = '" + s + "'", "id": "1"}).then(
+                              dio.post_data(url: "/dash/update_id",
+                                 data: {
+                                   "sql_key": "banner = '" + s + "'",
+                                 }
+                                  ,quary: {
+                                "table": "privacy_policy",
+
+                                "id": "1"}).then(
                                       (value) {});
                               Navigator.pop(context);
                             });
@@ -854,9 +870,12 @@ class _SettingsState extends State<Settings> {
                                     actions: [
                                       ElevatedButton(
                                           onPressed: () {
-                                            dio.post_data(url: "/dash/update_id", quary: {
+                                            dio.post_data(url: "/dash/update_id",
+                                                data: {
+                                                  "sql_key": " link = '${text_con.text}' ",
+                                                }
+                                                , quary: {
                                               "table": "the_support",
-                                              "sql_key": " link = '${text_con.text}' ",
                                               "id": 1
                                             }).then((value) => Navigator.pop(context));
                                           },
@@ -906,9 +925,14 @@ class _SettingsState extends State<Settings> {
                                     actions: [
                                       ElevatedButton(
                                           onPressed: () {
-                                            dio.post_data(url: "/dash/update_id", quary: {
+                                            dio.post_data(url: "/dash/update_id",
+                                                data:
+                                                {
+                                                  "sql_key": " version = '${text_con.text}' ",
+
+                                                }
+                                                , quary: {
                                               "table": "version",
-                                              "sql_key": " version = '${text_con.text}' ",
                                               "id": 1
                                             }).then((value) => Navigator.pop(context));
                                           },
@@ -958,9 +982,13 @@ class _SettingsState extends State<Settings> {
                                     actions: [
                                       ElevatedButton(
                                           onPressed: () {
-                                            dio.post_data(url: "/dash/update_id", quary: {
+                                            dio.post_data(url: "/dash/update_id",
+                                                data: {
+                                                  "sql_key": " link = '${text_con.text}' ",
+
+                                                }
+                                                , quary: {
                                               "table": "version",
-                                              "sql_key": " link = '${text_con.text}' ",
                                               "id": 1
                                             }).then((value) => Navigator.pop(context));
                                           },

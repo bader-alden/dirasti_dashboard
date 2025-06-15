@@ -325,7 +325,9 @@ Widget calendar_subject_list_element(BuildContext context, calendar_subject_modu
                                   actions: [
                                     ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                                     ElevatedButton(onPressed: (){
-                                      dio.post_data(url: "/dash/update_id",quary: {"table":" calendar ","id":model.id,"sql_key":" subject = '${_con.text}' , grade = '$grade' , photo = '$image_link' "}).then((value) {
+                                      dio.post_data(url: "/dash/update_id",data: {
+                                        "sql_key":" subject = '${_con.text}' , grade = '$grade' , photo = '$image_link' "
+                                      },quary: {"table":" calendar ","id":model.id,}).then((value) {
                                         print(value?.data);
                                         dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " calendar "}).then((value) {
                                           calendar_subject_list.clear();

@@ -16,6 +16,8 @@ class dio {
 
   static Future<Response?> get_data({url, quary}) async {
     dios?.options.headers = { 'Accept':'application/json',"Access-Control-Allow-Origin": "*"};
+    print(url);
+    print(quary);
     return await dios?.get(url,queryParameters: quary ??{});
   }
 

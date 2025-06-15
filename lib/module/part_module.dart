@@ -43,10 +43,10 @@ class part_detail_module{
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['time'] = this.time;
-    data['order'] = this.order;
-    data['res'] = this.res;
+    data['name'] = name?.replaceAll("\"", "\\""\"");
+    data['time'] = time;
+    data['order'] = order;
+    data['res'] = res;
     return data;
   }
 }

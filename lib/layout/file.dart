@@ -351,7 +351,7 @@ Widget file_list_element(BuildContext context, file_module model, setstate) {
                   SizedBox(
                     width: 10,
                   ),
-                  Center(child: Text(teacher_list.where((element) => element.id == model.teacher_name).first.teacher_name??"غير متوفر")),
+                  Center(child: Text(teacher_list.firstWhere((element) => element.id == model.teacher_name).teacher_name??"غير متوفر")),
                   if (MediaQuery.of(context).size.width > 500)
                     SizedBox(
                       width: MediaQuery.of(context).size.width.toDouble() / 8,
@@ -499,7 +499,11 @@ Widget file_list_element(BuildContext context, file_module model, setstate) {
                                   actions: [
                                     ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                                     ElevatedButton(onPressed: (){
-                                      dio.post_data(url: "/dash/update_id",quary: {"table":" file ","id":model.id,"sql_key":" teacher_name = '${tracher}' , grade = '$grade' , link = '$file_link' , photo = '${model.photo}' , subject = '$subject' , name = '${name_con.text}' , price = '${price_con.text}' , des = '${des_con.text}' , ordero = '${order_con.text}' , number_of_pages = '${hour_con.text}' , is_free = '${is_free_con.text}' "}).then((value) {
+                                      dio.post_data(url: "/dash/update_id",data: {
+                                        "sql_key":" teacher_name = '${tracher}' , grade = '$grade' , link = '$file_link' , photo = '${model.photo}' , subject = '$subject' , name = '${name_con.text}' , price = '${price_con.text}' , des = '${des_con.text}' , ordero = '${order_con.text}' , number_of_pages = '${hour_con.text}' , is_free = '${is_free_con.text}' "
+
+                                      },quary: {"table":" file ","id":model.id,
+                                      }).then((value) {
                                         print(value?.data);
                                         dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " file "}).then((value) {
                                           file_list.clear();

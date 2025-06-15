@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../module/user_module.dart';
 
 List<user_module> user_list = [];
+List<user_module> init_list = [];
 List<grade_module> grade_list = [];
 ScrollController user_list_con = ScrollController();
 ScrollController user_elment_con = ScrollController();
@@ -29,16 +30,21 @@ class Users extends StatefulWidget {
 class _UsersState extends State<Users> {
   @override
   void initState() {
+
     dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " user "}).then((value) {
+      user_list.clear();
+      init_list.clear();
       value?.data.forEach((element) {
         print(element);
         user_list.add(user_module.fromjson(element));
+        init_list.add(user_module.fromjson(element));
         if (user_list.length == value.data.length) {
           setState(() {});
         }
       });
     });
     dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " grade "}).then((value) {
+      grade_list.clear();
       value?.data.forEach((element) {
         print(element);
         grade_list.add(grade_module.fromjson(element));
@@ -64,7 +70,7 @@ class _UsersState extends State<Users> {
     } else if (user_type_page == 4) {
       return user_update_widget(context, null, setState);
     } else {
-      if (user_list.isNotEmpty) {
+     
         return Column(
           children: [
             SizedBox(
@@ -73,6 +79,22 @@ class _UsersState extends State<Users> {
             Row(
               children: [
                 Text("قائمة بالمستخدمين", style: TextStyle(fontSize: 30)),
+                SizedBox(width: 30,),
+                SizedBox(width: 200,
+                child: TextFormField(onChanged: (_){
+                  //filter user_list by name or phone number
+                  if(_!=""){
+                  setState(() {
+                    user_list = user_list.where((element) => element.name!.contains(_!) || element.mobile_id!.contains(_!)|| element.id!.contains(_!)).toList();
+                  });
+                  }else{
+                     setState(() {
+                      user_list=init_list;
+                     });
+                  }
+                  
+
+                },),),
                 Spacer(),
                 ElevatedButton(
                     style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.blue)),
@@ -90,6 +112,7 @@ class _UsersState extends State<Users> {
             SizedBox(
               height: 20,
             ),
+             if (user_list.isNotEmpty) 
             Expanded(
               child: Scrollbar(
                 controller: user_list_con,
@@ -112,19 +135,9 @@ class _UsersState extends State<Users> {
             ),
           ],
         );
-      } else {
-        return Container(
-          color: Colors.white,
-          child: const Center(
-            child: Text(
-              'المستخدمين',
-              style: TextStyle(fontSize: 35),
-            ),
-          ),
-        );
-      }
-    }
-  }
+    
+   
+    }}
 }
 
 Widget user_list_element(BuildContext context, user_module model, setstate) {
@@ -397,7 +410,7 @@ Widget user_detail_widget(BuildContext context, user_module? model, setstate) {
               padding: const EdgeInsets.all(4.0),
               child: Center(
                   child: Text(
-                    " الصف  " +(grade_list.where((e) => e.id==model.grade).first.name??""),
+                    " الصف  " +(grade_list.cast<grade_module?>().where((e) => e?.id==model.grade).toList().first?.name).toString(),
                     //"الصف ${model.grade}",
                     style: TextStyle(fontSize: 24),
                   )),
@@ -447,9 +460,65 @@ Widget user_detail_widget(BuildContext context, user_module? model, setstate) {
       SizedBox(
         height: 15,
       ),
-      Text(
-        "الكورسات",
-        style: TextStyle(fontSize: 24),
+      Row(
+        children: [
+          Text(
+            "الكورسات",
+            style: TextStyle(fontSize: 24),
+          ),
+          SizedBox(width: 30,),
+          ElevatedButton(onPressed: (){
+            var con = TextEditingController();
+            showDialog(context: context, builder: (context){
+              
+              return AlertDialog(
+                title: Text("اكتب الكود"),
+                content: TextFormField(
+                  controller: con,
+                ),
+                actions: [
+                  ElevatedButton(onPressed: () async {
+                     await dio.post_data(url: "/dash/add_copon",quary: {"uid_copon":con.text,
+                      "user_id":model?.id
+                      }).then((value) {
+                        print(value?.data);
+                        if(value?.data=="ok"){
+                        //  emit(scss());
+                         Tost_widget("تمت الاضافة","green");
+                         setstate(() {
+                            user_model_type = null;
+                            user_type_page = 0;
+                            is_loading_update_user = false;
+                            user_list.clear();
+                            dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " user "}).then((value) {
+                              value?.data.forEach((element) {
+                                print(element);
+                                user_list.add(user_module.fromjson(element));
+                                if (user_list.length == value.data.length) {
+                                  setstate(() {});
+                                }
+                              });
+                            });
+                          });
+                   
+                        }else if(value?.data=="error4"){
+                          Tost_widget("الكود تم استخدامه","red");
+                          //emit(error());
+                        }else{
+                          Tost_widget("خطأ","red");
+                        }
+                      });
+                        Navigator.pop(context);
+                        
+                  }, child: Text("إضافة")),
+                  ElevatedButton(onPressed: (){
+                    Navigator.pop(context);
+                  }, child: Text("إلفاء")),
+                ]
+              );
+            });
+          }, child: Text("إضافة")),
+        ],
       ),
       SizedBox(
         height: 10,
@@ -465,7 +534,7 @@ Widget user_detail_widget(BuildContext context, user_module? model, setstate) {
                   SizedBox(width: 20,),
                   ElevatedButton(onPressed: () {
                     var f= model!.course_file!.split(",")[index].toString().split("|");
-                    dio.post_data(url: "/dash/select_where",quary:  {"sql":" * ","table":"course","where":" teacher_name ='${f[3]}' AND subject ='${f[2]}' AND grade ='${f[1]}' "}).then((value) {
+                    dio.post_data(url: "/dash/select_where",quary:  {"sql":" * ","table":"course","where":" id ='${f[4]}' "}).then((value) {
                       var fil = course_module.fromjson(value?.data[0]);
                       showDialog(context: context, builder: (context)=>AlertDialog(
                         title: Column(
@@ -478,6 +547,30 @@ Widget user_detail_widget(BuildContext context, user_module? model, setstate) {
                       ));
                     });
                   }, child: Text("عرض")),
+                  SizedBox(width: 20,),
+                  ElevatedButton(onPressed: () {
+                   var a = model!.course_file!.split(",")..remove(model!.course_file?.split(",")[index]);
+                    print( model);
+                    print(a..join(","));
+                     dio.post_data(url: "/dash/" +  "update_id_user", quary: {"table":" user ","id":model.id,"sql_key":"course_file = '${a.join(",")}' "}).then((value) {
+                          print(value);
+                          setstate(() {
+                            user_model_type = null;
+                            user_type_page = 0;
+                            is_loading_update_user = false;
+                            user_list.clear();
+                            dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " user "}).then((value) {
+                              value?.data.forEach((element) {
+                                print(element);
+                                user_list.add(user_module.fromjson(element));
+                                if (user_list.length == value.data.length) {
+                                  setstate(() {});
+                                }
+                              });
+                            });
+                          });
+                        });
+                  }, child: Text("حذف")),
                 ],
               );
             } else {

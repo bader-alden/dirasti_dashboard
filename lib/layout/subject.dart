@@ -31,6 +31,8 @@ class _SubjectState extends State<Subject> {
   void initState()  {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      subject_list.clear();
+      grade_list.clear();
       try {
         await dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " subject "}).then((value) {
           value?.data.forEach((element) {
@@ -67,6 +69,7 @@ class _SubjectState extends State<Subject> {
   void dispose() {
     super.dispose();
     subject_list.clear();
+    grade_list.clear();
     user_model_type = null;
   }
 
@@ -129,10 +132,10 @@ class _SubjectState extends State<Subject> {
                                           );
                                         },
                                       );
-                                      // String dir = image.files[0].name.split(".").last;
+                                      // String dir = image.files[0].namer.split(".").last;
                                       FormData formData =
                                       FormData.fromMap({"file": await MultipartFile.fromBytes(image.toList(), filename: Uuid().v4()+".png")});
-                                      dio.post_data(url: "/uplade/uplode", data: formData).then((value) {
+                                     dio.post_data(url: "/uplade/uplode", data: formData).then((value) {
                                         print(value?.data);
                                         Tost_widget("تم رفع الصورة", "green");
                                         image_link = value?.data;
@@ -514,7 +517,9 @@ Widget subject_list_element(BuildContext context, subject_module model, setstate
                                   actions: [
                                     ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                                     ElevatedButton(onPressed: (){
-                                      dio.post_data(url: "/dash/update_id",quary: {"table":" subject ","id":model.id,"sql_key":" subject = '${_con.text}' , grade = '$grade' , photo = '$image_link' , banner1 = '$banner1_link' , banner2 = '$banner2_link'  , banner3 = '$banner3_link'"}).then((value) {
+                                      dio.post_data(url: "/dash/update_id",data: {
+                                        "sql_key":" subject = '${_con.text}' , grade = '$grade' , photo = '$image_link' , banner1 = '$banner1_link' , banner2 = '$banner2_link'  , banner3 = '$banner3_link'"
+                                      },quary: {"table":" subject ","id":model.id,}).then((value) {
                                         print(value?.data);
                                         dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " subject "}).then((value) {
                                           subject_list.clear();

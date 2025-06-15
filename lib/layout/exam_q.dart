@@ -363,11 +363,13 @@ class _ExamQState extends State<ExamQ> {
                                               child: Text("إلفاء")),
                                           ElevatedButton(
                                               onPressed: () {
-                                                dio.post_data(url: "/dash/update_id", quary: {
+                                                dio.post_data(url: "/dash/update_id",data: {
+                                                  "sql_key":
+                                                  " question = '${q_con.text}' , indexs = '${ans.text}' , photo = '$image_link' , Answer1 = '${a1_con.text}' , Answer2 = '${a2_con.text}' , Answer3 = '${a3_con.text}' , Answer4 = '${a4_con.text}' "
+
+                                                }, quary: {
                                                   "table": " all_tests ",
                                                   "id": q_list[index].id.toString(),
-                                                  "sql_key":
-                                                      " question = '${q_con.text}' , indexs = '${ans.text}' , photo = '$image_link' , Answer1 = '${a1_con.text}' , Answer2 = '${a2_con.text}' , Answer3 = '${a3_con.text}' , Answer4 = '${a4_con.text}' "
                                                 }).then((value) {
                                                   print(value?.data);
                                                   dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " all_tests "}).then((value) {

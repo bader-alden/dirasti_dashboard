@@ -26,6 +26,7 @@ class _GradeState extends State<Grade> {
   @override
   void initState() {
     dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " grade "}).then((value) {
+      grade_list.clear();
       value?.data.forEach((element) {
         print(element);
         grade_list.add(grade_module.fromjson(element));
@@ -194,7 +195,9 @@ Widget grade_list_element(BuildContext context, grade_module model, setstate) {
                             actions: [
                               ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                               ElevatedButton(onPressed: (){
-                                dio.post_data(url: "/dash/update_id",quary: {"table":" grade ","id":model.id,"sql_key":" name = '${_con.text}' "}).then((value) {
+                                dio.post_data(url: "/dash/update_id",data: {
+                                "sql_key":" name = '${_con.text}' ",
+                                },quary: {"table":" grade ","id":model.id}).then((value) {
                                   dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " grade "}).then((value) {
                                     grade_list.clear();
                                     value?.data.forEach((element) {

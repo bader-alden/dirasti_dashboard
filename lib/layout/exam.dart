@@ -94,6 +94,7 @@ class _ExamState extends State<Exam> {
                     var _con = TextEditingController();
                     var time_con = TextEditingController();
                     var order_con = TextEditingController();
+                    var is_free_con = TextEditingController();
                     var grade ;
                     var subject ;
                     showDialog(context: context, builder: (context)=>StatefulBuilder(
@@ -111,6 +112,9 @@ class _ExamState extends State<Exam> {
                                 SizedBox(height: 20,),
                                 Text("الترتيب"),
                                 TextFormField(controller: order_con,textDirection: TextDirection.rtl,),
+                                SizedBox(height: 20,),
+                                Text("هل مجاني  0 للمدفوع  1 للمجاني"),
+                                TextFormField(controller: is_free_con,textDirection: TextDirection.rtl,),
                                 SizedBox(height: 20,),
                                 Text("السنة"),
                                 DropdownButton(
@@ -138,7 +142,7 @@ class _ExamState extends State<Exam> {
                             actions: [
                               ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                               ElevatedButton(onPressed: (){
-                                dio.post_data(url: "/dash/insert",quary: {"table":" exam " , "sql_key":" name , subject , grade , time , ordero " , "sql_value":" '${_con.text}', $subject , '$grade' , '${time_con.text}' , '${order_con.text}' " }).then((value) {
+                                dio.post_data(url: "/dash/insert",quary: {"table":" exam " , "sql_key":" name , subject , grade , time , ordero , is_free " , "sql_value":" '${_con.text}', $subject , '$grade' , '${time_con.text}' , '${order_con.text}' , '${is_free_con.text}' " }).then((value) {
                                   print(value?.data);
                                   dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " exam "}).then((value) {
                                     exam_list.clear();
@@ -245,6 +249,10 @@ Widget exam_list_element(BuildContext context, Map model, setstate) {
                   SizedBox(
                     width: 30,
                   ),
+                  Center(child: Text("هل مجاني: ${model['is_free']=="1"?"نعم":"لا"!}")),
+                  SizedBox(
+                    width: 30,
+                  ),
                   Center(child: Text("السنة:")),
                   SizedBox(
                     width: 10,
@@ -277,6 +285,7 @@ Widget exam_list_element(BuildContext context, Map model, setstate) {
                           var _con = TextEditingController(text: model['name']);
                           var time_con = TextEditingController(text: model['time']);
                           var ordero_con = TextEditingController(text: model['ordero']);
+                          var is_free_con = TextEditingController(text: model['is_free']);
                           var grade =model['grade'];
                           var subject =model['subject'];
                           showDialog(context: context, builder: (context)=>StatefulBuilder(
@@ -294,6 +303,9 @@ Widget exam_list_element(BuildContext context, Map model, setstate) {
                                       SizedBox(height: 20,),
                                       Text("الترتيب"),
                                       TextFormField(controller: ordero_con,textDirection: TextDirection.rtl,),
+                                      SizedBox(height: 20,),
+                                      Text("هل مجاني  0 للمدفوع  1 للمجاني"),
+                                      TextFormField(controller: is_free_con,textDirection: TextDirection.rtl,),
                                       SizedBox(height: 20,),
                                       Text("السنة"),
                                       DropdownButton(
@@ -321,7 +333,11 @@ Widget exam_list_element(BuildContext context, Map model, setstate) {
                                   actions: [
                                     ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                                     ElevatedButton(onPressed: (){
-                                      dio.post_data(url: "/dash/update_id",quary: {"table":" exam ","id":model['id'],"sql_key":" name = '${_con.text}' , time = '${time_con.text}' , ordero = '${ordero_con.text}' , grade = '$grade' , subject = '$subject' "}).then((value) {                                        print(value?.data);
+                                      dio.post_data(url: "/dash/update_id",data: {
+                                        "sql_key":" name = '${_con.text}' , time = '${time_con.text}' , ordero = '${ordero_con.text}' , grade = '$grade' , subject = '$subject' , is_free = '${is_free_con.text}' "
+
+                                      },quary: {"table":" exam ","id":model['id'],
+                                      }).then((value) {                                        print(value?.data);
                                       dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " exam "}).then((value) {
                                         exam_list.clear();
                                         value?.data.forEach((element) {

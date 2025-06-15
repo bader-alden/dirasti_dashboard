@@ -34,6 +34,9 @@ class _TeacherState extends State<Teacher> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       try {
+         teacher_list.clear();
+        subject_list.clear();
+        grade_list.clear();
         await dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " teatcher "}).then((value) {
           value?.data.forEach((element) {
             print(element);
@@ -97,6 +100,7 @@ class _TeacherState extends State<Teacher> {
                   style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.blue)),
                   onPressed: () {
                     var _con = TextEditingController();
+                    var exam_dashboard_id_con = TextEditingController();
                     var grade ;
                     var subject ;
                     var image_link ;
@@ -109,6 +113,9 @@ class _TeacherState extends State<Teacher> {
                                 SizedBox(height: 20,),
                                 Text("الاسم"),
                                 TextFormField(controller: _con,textDirection: TextDirection.rtl,),
+                                SizedBox(height: 20,),
+                                Text("كلمة سر exam dashboard"),
+                                TextFormField(controller: exam_dashboard_id_con,textDirection: TextDirection.rtl,),
                                 SizedBox(height: 20,),
                                 Text("السنة"),
                                 DropdownButton(
@@ -167,7 +174,7 @@ class _TeacherState extends State<Teacher> {
                             actions: [
                               ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                               ElevatedButton(onPressed: (){
-                                dio.post_data(url: "/dash/insert",quary: {"table":" teatcher " , "sql_key":" teacher_name , subject , grade , photo " , "sql_value":" '${_con.text}', $subject , '$grade' , '$image_link' " }).then((value) {
+                                dio.post_data(url: "/dash/insert",quary: {"table":" teatcher " , "sql_key":" teacher_name , subject , grade , photo , exam_dashboard_id " , "sql_value":" '${_con.text}', $subject , '$grade' , '$image_link', '${exam_dashboard_id_con.text}' " }).then((value) {
                                   print(value?.data);
                                   dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " teatcher "}).then((value) {
                                     teacher_list.clear();
@@ -267,6 +274,10 @@ Widget teacher_list_element(BuildContext context, teacher_module model, setstate
                   SizedBox(
                     width: 30,
                   ),
+                  Center(child: Text("exam dashboard : ${model.exam_dashboard_id!}")),
+                  SizedBox(
+                    width: 30,
+                  ),
                   Center(child: Text("السنة:")),
                   SizedBox(
                     width: 10,
@@ -291,6 +302,7 @@ Widget teacher_list_element(BuildContext context, teacher_module model, setstate
                     child: ElevatedButton(
                         onPressed: () {
                           var _con = TextEditingController(text: model.teacher_name);
+                          var exam_dashboard_id_con = TextEditingController(text: model.exam_dashboard_id);
                           var grade =model.grade;
                           var subject =model.subject;
                           var image_link =model.photo;
@@ -303,6 +315,9 @@ Widget teacher_list_element(BuildContext context, teacher_module model, setstate
                                       SizedBox(height: 20,),
                                       Text("الاسم"),
                                       TextFormField(controller: _con,textDirection: TextDirection.rtl,),
+                                      SizedBox(height: 20,),
+                                      Text("كلمة سر exam dashboard"),
+                                      TextFormField(controller: exam_dashboard_id_con,textDirection: TextDirection.rtl,),
                                       SizedBox(height: 20,),
                                       Text("السنة"),
                                       DropdownButton(
@@ -361,7 +376,9 @@ Widget teacher_list_element(BuildContext context, teacher_module model, setstate
                                   actions: [
                                     ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                                     ElevatedButton(onPressed: (){
-                                      dio.post_data(url: "/dash/update_id",quary: {"table":" teatcher ","id":model.id,"sql_key":" teacher_name = '${_con.text}' , grade = '$grade' , photo = '$image_link' , subject = '$subject' "}).then((value) {                                        print(value?.data);
+                                      dio.post_data(url: "/dash/update_id",data: {
+                                        "sql_key":" teacher_name = '${_con.text}' , grade = '$grade' , photo = '$image_link' , subject = '$subject' , exam_dashboard_id = '${exam_dashboard_id_con.text}' "
+                                      },quary: {"table":" teatcher ","id":model.id,}).then((value) {                                        print(value?.data);
                                       dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " teatcher "}).then((value) {
                                         teacher_list.clear();
                                         value?.data.forEach((element) {

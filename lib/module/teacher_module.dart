@@ -1,5 +1,6 @@
 class teacher_module{
   String? teacher_name;
+  String?  exam_dashboard_id;
   String? id;
   String? subject;
   String? photo;
@@ -9,6 +10,7 @@ class teacher_module{
     id = json['id'].toString();
     subject = json['subject'].toString();
     photo = json['photo'].toString();
+    exam_dashboard_id = json['exam_dashboard_id'].toString();
     grade = json['grade'].toString();
   }
 }

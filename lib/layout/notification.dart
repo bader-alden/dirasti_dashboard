@@ -209,7 +209,9 @@ Widget noti_list_element(BuildContext context, Map model, setstate) {
                             actions: [
                               ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                               ElevatedButton(onPressed: (){
-                                dio.post_data(url: "/dash/update_id",quary: {"table":" notices ","id":model['id'],"sql_key":" title = '${title_con.text}' , body = '${body_con.text}' "}).then((value) {
+                                dio.post_data(url: "/dash/update_id",data: {
+                                  "sql_key":" title = '${title_con.text}' , body = '${body_con.text}' "
+                                },quary: {"table":" notices ","id":model['id']}).then((value) {
                                   dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " notices "}).then((value) {
                                     noti_list.clear();
                                     value?.data.forEach((element) {

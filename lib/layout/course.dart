@@ -541,7 +541,15 @@ Widget course_list_element(BuildContext context, course_module model, setstate) 
                                   actions: [
                                     ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text("إلفاء")),
                                     ElevatedButton(onPressed: (){
-                                      dio.post_data(url: "/dash/update_id",quary: {"table":" course ","id":model.id,"sql_key":" teacher_name = '${tracher}' , grade = '$grade' , photo = '$image_link' , banner = '$banner' , subject = '$subject' , name = '${name_con.text}'  , ordero = '${order_con.text}'  , des = '${des_con.text}' , price = '${price_con.text}' , part = '${part_con.text}' , number_hours = '${hour_con.text}' , is_free = '${is_free_con.text}' "}).then((value) {
+                                      dio.post_data(url: "/dash/update_id",
+                                          data: {
+                                            "sql_key":" teacher_name = '${tracher}' , grade = '$grade' , photo = '$image_link' , banner = '$banner' , subject = '$subject' , name = '${name_con.text}'  , ordero = '${order_con.text}'  , des = '${des_con.text}' , price = '${price_con.text}' , part = '${part_con.text}' , number_hours = '${hour_con.text}' , is_free = '${is_free_con.text}' "
+
+                                          }
+                                          ,quary: {
+                                        "table":" course ",
+                                        "id":model.id,
+                                      }).then((value) {
                                         print(value?.data);
                                         dio.post_data(url: "/dash/select", quary: {"sql": " * ", "table": " course "}).then((value) {
                                           course_list.clear();
